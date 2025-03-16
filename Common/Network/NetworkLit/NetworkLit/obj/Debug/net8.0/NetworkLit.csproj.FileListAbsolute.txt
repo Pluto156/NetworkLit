@@ -1,0 +1,15 @@
+E:\sourcecode\NetworkLit\Common\Network\NetworkLit\NetworkLit\bin\Debug\net8.0\NetworkLit.exe
+E:\sourcecode\NetworkLit\Common\Network\NetworkLit\NetworkLit\bin\Debug\net8.0\NetworkLit.deps.json
+E:\sourcecode\NetworkLit\Common\Network\NetworkLit\NetworkLit\bin\Debug\net8.0\NetworkLit.runtimeconfig.json
+E:\sourcecode\NetworkLit\Common\Network\NetworkLit\NetworkLit\bin\Debug\net8.0\NetworkLit.dll
+E:\sourcecode\NetworkLit\Common\Network\NetworkLit\NetworkLit\bin\Debug\net8.0\NetworkLit.pdb
+E:\sourcecode\NetworkLit\Common\Network\NetworkLit\NetworkLit\obj\Debug\net8.0\NetworkLit.GeneratedMSBuildEditorConfig.editorconfig
+E:\sourcecode\NetworkLit\Common\Network\NetworkLit\NetworkLit\obj\Debug\net8.0\NetworkLit.AssemblyInfoInputs.cache
+E:\sourcecode\NetworkLit\Common\Network\NetworkLit\NetworkLit\obj\Debug\net8.0\NetworkLit.AssemblyInfo.cs
+E:\sourcecode\NetworkLit\Common\Network\NetworkLit\NetworkLit\obj\Debug\net8.0\NetworkLit.csproj.CoreCompileInputs.cache
+E:\sourcecode\NetworkLit\Common\Network\NetworkLit\NetworkLit\obj\Debug\net8.0\NetworkLit.sourcelink.json
+E:\sourcecode\NetworkLit\Common\Network\NetworkLit\NetworkLit\obj\Debug\net8.0\NetworkLit.dll
+E:\sourcecode\NetworkLit\Common\Network\NetworkLit\NetworkLit\obj\Debug\net8.0\refint\NetworkLit.dll
+E:\sourcecode\NetworkLit\Common\Network\NetworkLit\NetworkLit\obj\Debug\net8.0\NetworkLit.pdb
+E:\sourcecode\NetworkLit\Common\Network\NetworkLit\NetworkLit\obj\Debug\net8.0\NetworkLit.genruntimeconfig.cache
+E:\sourcecode\NetworkLit\Common\Network\NetworkLit\NetworkLit\obj\Debug\net8.0\ref\NetworkLit.dll
