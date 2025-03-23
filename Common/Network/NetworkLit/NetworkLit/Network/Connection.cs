@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using NetworkLit.Utility;
 
 namespace NetworkLit.Network
 {
@@ -65,12 +66,15 @@ namespace NetworkLit.Network
                 Console.Write($"{b:X2} "); // 以十六进制格式打印，每个字节两位
             }
             Console.WriteLine("\n");
+            buffer = PackageCompress.Compress(buffer);
+
 
             this.kcp.Send(buffer);
         }
 
         public void Input(byte[] buffer)
         {
+            buffer = PackageCompress.Decompress(buffer);
             Console.WriteLine($"kcp input {EndPoint.ToString()}");
             foreach (byte b in buffer)
             {

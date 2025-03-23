@@ -91,7 +91,7 @@ namespace NetworkLit.Network
 
             if (package != null)
             {
-                buffer = PackageCompress.Compress(MessagePackage.Write(package));
+                buffer = MessagePackage.Write(package);
             }
             else
             {

@@ -9,14 +9,38 @@ namespace NetworkLit.Network
 {
     public class KCP
     {
+        /// <summary>
+        /// no delay最小重传超时
+        /// </summary>
         public const int IKCP_RTO_NDL = 30;  // no delay min rto
+        /// <summary>
+        /// delay最小重传超时
+        /// </summary>
         public const int IKCP_RTO_MIN = 100; // normal min rto
+        /// <summary>
+        /// 默认最小重传超时
+        /// </summary>
         public const int IKCP_RTO_DEF = 200;
+        /// <summary>
+        /// 最大重传超时
+        /// </summary>
         public const int IKCP_RTO_MAX = 60000;
+        /// <summary>
+        /// 数据推送命令
+        /// </summary>
         public const int IKCP_CMD_PUSH = 81; // cmd: push data
+        /// <summary>
+        /// 确认命令
+        /// </summary>
         public const int IKCP_CMD_ACK = 82; // cmd: ack
+        /// <summary>
+        /// IKCP_CMD_WASK 接收窗口大小询问命令
+        /// </summary>
         public const int IKCP_CMD_WASK = 83; // cmd: window probe (ask)
         public const int IKCP_CMD_WINS = 84; // cmd: window size (tell)
+        /// <summary>
+        /// 表示需要发送探测请求。IKCP_ASK_SEND 是一个用于发送探测请求的命令
+        /// </summary>
         public const int IKCP_ASK_SEND = 1;  // need to send IKCP_CMD_WASK
         public const int IKCP_ASK_TELL = 2;  // need to send IKCP_CMD_WINS
         public const int IKCP_WND_SND = 32;
@@ -25,8 +49,14 @@ namespace NetworkLit.Network
         public const int IKCP_ACK_FAST = 3;
         public const int IKCP_INTERVAL = 100;
         public const int IKCP_OVERHEAD = 24;
+        /// <summary>
+        /// 数据段的发送次数超过了 dead_link 的阈值，说明该数据段可能由于网络问题无法传送，设置 state = 0，表示此时连接可能出现问题或失效
+        /// </summary>
         public const int IKCP_DEADLINK = 10;
         public const int IKCP_THRESH_INIT = 2;
+        /// <summary>
+        /// 慢启动最小阈值
+        /// </summary>
         public const int IKCP_THRESH_MIN = 2;
         public const int IKCP_PROBE_INIT = 7000;   // 7 secs to probe window size
         public const int IKCP_PROBE_LIMIT = 120000; // up to 120 secs to probe window
@@ -156,16 +186,49 @@ namespace NetworkLit.Network
         // KCP Segment Definition
         internal class Segment
         {
+            /// <summary>
+            /// conv：连接号。UDP是无连接的，conv用于表示来自哪个客户端。对连接的一种替代，因为有conv，因此KCP也是支持多路复用
+            /// </summary>
             internal UInt32 conv = 0;
+            /// <summary>
+            /// 命令类型 IKCP_CMD_PUSH:数据推送命令 IKCP_CMD_ACK：确认命令 IKCP_CMD_WASK 接收窗口大小询问命令 IKCP_CMD_WINS 接收窗口大小告知命令 
+            /// </summary>
             internal UInt32 cmd = 0;
+            /// <summary>
+            /// frg：分片，用户数据可能会被分成多个KCP包，发送出去 在send函数中其含义设置为 表示当前数据段还有多少个未发送的剩余数据段
+            /// </summary>
             internal UInt32 frg = 0;
+            /// <summary>
+            /// wnd：接收窗口大小，发送方的发送窗口不能超过接收方给出的数值, （其实是接收窗口的剩余大小，这个大小是动态变化的)
+            /// </summary>
             internal UInt32 wnd = 0;
+            /// <summary>
+            /// ts：时间序列
+            /// </summary>
             internal UInt32 ts = 0;
+            /// <summary>
+            /// sn：序列号
+            /// </summary>
             internal UInt32 sn = 0;
+            /// <summary>
+            /// una：下一个可接收的序列号。其实就是确认号，收到sn=10的包，una为11
+            /// </summary>
             internal UInt32 una = 0;
+            /// <summary>
+            /// 数据段的重传时间戳
+            /// </summary>
             internal UInt32 resendts = 0;
+            /// <summary>
+            /// 重传超时时间
+            /// </summary>
             internal UInt32 rto = 0;
+            /// <summary>
+            /// 当前数据段的 快速确认（fastack） 次数
+            /// </summary>
             internal UInt32 fastack = 0;
+            /// <summary>
+            /// 该数据段的发送次数
+            /// </summary>
             internal UInt32 xmit = 0;
             internal byte[] data;
 
@@ -194,15 +257,68 @@ namespace NetworkLit.Network
         }
 
         // kcp members.
-        UInt32 conv; UInt32 mtu; UInt32 mss; UInt32 state;
-        UInt32 snd_una; UInt32 snd_nxt; UInt32 rcv_nxt;
-        UInt32 ts_recent; UInt32 ts_lastack; UInt32 ssthresh;
-        UInt32 rx_rttval; UInt32 rx_srtt; UInt32 rx_rto; UInt32 rx_minrto;
-        UInt32 snd_wnd; UInt32 rcv_wnd; UInt32 rmt_wnd; UInt32 cwnd; UInt32 probe;
-        UInt32 current; UInt32 interval; UInt32 ts_flush; UInt32 xmit;
-        UInt32 nodelay; UInt32 updated;
-        UInt32 ts_probe; UInt32 probe_wait;
-        UInt32 dead_link; UInt32 incr;
+        UInt32 conv; 
+        UInt32 mtu; 
+        UInt32 mss; 
+        UInt32 state;
+        /// <summary>
+        /// 是尚未确认的序列号（即已经发送但还没有被接收方确认的最小序列号）
+        /// </summary>
+        UInt32 snd_una;
+        /// <summary>
+        /// 是下一个待发送的数据段的序列号
+        /// </summary>
+        UInt32 snd_nxt; 
+        UInt32 rcv_nxt;
+        UInt32 ts_recent; 
+        UInt32 ts_lastack;
+        /// <summary>
+        /// 慢启动阈值
+        /// </summary>
+        UInt32 ssthresh;
+        UInt32 rx_rttval;
+        UInt32 rx_srtt;
+        /// <summary>
+        /// 重传超时
+        /// </summary>
+        UInt32 rx_rto;
+        /// <summary>
+        /// 最小重传超时
+        /// </summary>
+        UInt32 rx_minrto;
+        UInt32 snd_wnd; 
+        UInt32 rcv_wnd; 
+        UInt32 rmt_wnd;
+        /// <summary>
+        /// 拥塞窗口大小
+        /// </summary>
+        UInt32 cwnd; 
+        UInt32 probe;
+        UInt32 current;
+        /// <summary>
+        /// 设置内部定时器的更新间隔，单位是毫秒。默认值为 100ms。此值决定了KCP协议在每次更新时的周期。
+        /// </summary>
+        UInt32 interval; 
+        UInt32 ts_flush;
+        /// <summary>
+        /// 总共已经发送的重传次数
+        /// </summary>
+        UInt32 xmit;
+        UInt32 nodelay; 
+        UInt32 updated;
+        /// <summary>
+        /// 
+        /// </summary>
+        UInt32 ts_probe; 
+        UInt32 probe_wait;
+        /// <summary>
+        /// 数据段的发送次数超过了 dead_link 的阈值，说明该数据段可能由于网络问题无法传送，设置 state = 0，表示此时连接可能出现问题或失效
+        /// </summary>
+        UInt32 dead_link;
+        /// <summary>
+        /// 拥塞窗口的 增量（incr），即下一次能够发送的最大数据量，等于 当前的 cwnd 乘以 最大报文段大小（mss）
+        /// </summary>
+        UInt32 incr;
 
         Segment[] snd_queue = new Segment[0];
         Segment[] rcv_queue = new Segment[0];
@@ -212,7 +328,13 @@ namespace NetworkLit.Network
         UInt32[] acklist = new UInt32[0];
 
         byte[] buffer;
+        /// <summary>
+        /// 如果传入的值大于或等于 0，则将 fastresend 设置为传入值。fastresend = 0：禁用快速重传。fastresend = 1：启用快速重传。是快速重传的阈值，表示 当一个数据包在接收方被跳过（即被后续数据包多次 ACK 确认）达到一定次数时，就进行快速重传。
+        /// </summary>
         Int32 fastresend;
+        /// <summary>
+        /// 用于启用或禁用KCP协议的拥塞控制。如果传入值为 1，则禁用拥塞控制，允许更高的发送速率；如果为 0（默认值），则启用拥塞控制。nocwnd = 1：禁用拥塞控制。nocwnd = 0：启用拥塞控制。
+        /// </summary>
         Int32 nocwnd;
         Int32 logmask;
         // buffer, size
@@ -633,7 +755,9 @@ namespace NetworkLit.Network
         {
             var current_ = current;
             var buffer_ = buffer;
+            //记录进行了快速重传的次数
             var change = 0;
+            //标记此次为是否为丢包重传
             var lost = 0;
 
             if (0 == updated) return;
@@ -711,17 +835,27 @@ namespace NetworkLit.Network
             count = 0;
             for (var k = 0; k < snd_queue.Length; k++)
             {
+                //已经达到窗口大小的上限，应该停止发送更多数据段
                 if (_itimediff(snd_nxt, snd_una + cwnd_) >= 0) break;
 
                 var newseg = snd_queue[k];
+                //设置会话 ID
                 newseg.conv = conv;
+                //设置命令为推送数据（即发送数据）
                 newseg.cmd = IKCP_CMD_PUSH;
+                //设置接收窗口，通常使用当前的接收窗口大小
                 newseg.wnd = seg.wnd;
+                //设置时间戳为当前时间
                 newseg.ts = current_;
+                //设置序列号为 snd_nxt，即当前发送的段的序列号
                 newseg.sn = snd_nxt;
+                //设置接收端下一个期望的序列号
                 newseg.una = rcv_nxt;
+                //设置重传时间戳为当前时间，标记该数据段的重传时间
                 newseg.resendts = current_;
+                //设置重传超时时间
                 newseg.rto = rx_rto;
+                //初始化快速确认和发送计数
                 newseg.fastack = 0;
                 newseg.xmit = 0;
                 snd_buf = append<Segment>(snd_buf, newseg);
@@ -731,6 +865,7 @@ namespace NetworkLit.Network
 
             if (0 < count)
             {
+                //表示从发送队列中移除已经发送的部分，只保留剩余未发送的部分。
                 snd_queue = slice<Segment>(snd_queue, count, snd_queue.Length);
             }
 
@@ -747,29 +882,43 @@ namespace NetworkLit.Network
                 var debug = _itimediff(current_, segment.resendts);
                 if (0 == segment.xmit)
                 {
+                    //该数据段的第一次发送
                     needsend = true;
                     segment.xmit++;
                     segment.rto = rx_rto;
+                    //设置数据段的重传时间戳为当前时间加上 RTO 和最小 RTO（rtomin），确保在超时后可以重传该数据段
                     segment.resendts = current_ + segment.rto + rtomin;
                 }
                 else if (_itimediff(current_, segment.resendts) >= 0)
                 {
+                    //判断当前时间是否已经超过该数据段的重传时间戳（即是否超时）
                     needsend = true;
                     segment.xmit++;
                     xmit++;
+                    //如果 nodelay == 0（标准模式），则 RTO 增加 rx_rto，即重新计算重传超时时间
+                    //如果 nodelay != 0（启用了 nodelay 模式），则 RTO 只增加一半，即 rx_rto / 2。这种做法使得启用 nodelay 时，重传超时更快，以提高实时性
                     if (0 == nodelay)
                         segment.rto += rx_rto;
                     else
                         segment.rto += rx_rto / 2;
+                    //更新重传时间戳为当前时间加上新的 RTO
                     segment.resendts = current_ + segment.rto;
+                    //标记此次为丢包重传
                     lost = 1;
                 }
                 else if (segment.fastack >= resent)
                 {
+                    // 表示当前数据段的 快速确认（fastack） 次数超过了 fastresend 设置的阈值，意味着该数据段可能已经被接收方多次 ACK，应该进行快速重传
+
+                    //标记需要重发该数据段
                     needsend = true;
+                    //增加该数据段的发送次数
                     segment.xmit++;
+                    //清除快速确认计数器，因为数据段已经进行快速重传
                     segment.fastack = 0;
+                    //更新重传时间戳为当前时间加上 RTO
                     segment.resendts = current_ + segment.rto;
+                    //记录进行了快速重传的次数
                     change++;
                 }
 
@@ -793,7 +942,7 @@ namespace NetworkLit.Network
                         Array.Copy(segment.data, 0, buffer, offset, segment.data.Length);
                         offset += segment.data.Length;
                     }
-
+                    //数据段的发送次数超过了 dead_link 的阈值，说明该数据段可能由于网络问题无法传送，设置 state = 0，表示此时连接可能出现问题或失效
                     if (segment.xmit >= dead_link)
                     {
                         state = 0;
@@ -802,6 +951,7 @@ namespace NetworkLit.Network
             }
 
             // flash remain segments
+            //检查是否有剩余数据需要发送
             if (offset > 0)
             {
                 output(buffer, offset);
@@ -810,25 +960,39 @@ namespace NetworkLit.Network
             }
 
             // update ssthresh
+            //更新慢启动阈值 (ssthresh) 和拥塞窗口 (cwnd)
             if (change != 0)
             {
+                //快速重传过
+
+                //计算当前网络中的 "已发送但未确认" 的数据量（即发送序列号和确认序列号之间的差）。
                 var inflight = snd_nxt - snd_una;
+                //更新 慢启动阈值（ssthresh）。慢启动阈值通常是通过将当前发送的未确认数据量（inflight）除以 2 来进行调整。ssthresh 是 KCP 协议中用于控制 从慢启动到拥塞避免的转换点 的参数。
                 ssthresh = inflight / 2;
+                //如果更新后的 ssthresh 小于 IKCP_THRESH_MIN（最小阈值），则将其调整为该最小值，避免阈值过小
                 if (ssthresh < IKCP_THRESH_MIN)
                     ssthresh = IKCP_THRESH_MIN;
+                //将当前的 拥塞窗口（cwnd）设置为 慢启动阈值（ssthresh） 加上 快速重传的阈值（resent），意味着拥塞窗口的大小受网络当前状态影响，并且增加了一些额外的空间来处理快速重传。
                 cwnd = ssthresh + resent;
+                //更新拥塞窗口的 增量（incr），即下一次能够发送的最大数据量，等于 当前的 cwnd 乘以 最大报文段大小（mss）
                 incr = cwnd * mss;
             }
 
+            //处理丢包情况
             if (lost != 0)
             {
+                //当发生丢包时，KCP 会将 慢启动阈值（ssthresh） 设置为当前 拥塞窗口（cwnd） 的一半，表示网络变得拥塞，KCP 应该减少发送速率
                 ssthresh = cwnd / 2;
+                //如果更新后的 ssthresh 小于最小值 IKCP_THRESH_MIN，则将其调整为该最小值
                 if (ssthresh < IKCP_THRESH_MIN)
                     ssthresh = IKCP_THRESH_MIN;
+                //拥塞窗口被设置为 1，表示进入 拥塞避免阶段，减少数据发送速率，并避免过多的数据发送
                 cwnd = 1;
+                //设置拥塞窗口的增量为 最大报文段大小（mss），即每次只能发送一个最大单元的数据
                 incr = mss;
             }
 
+            //保证最小的拥塞窗口和增量
             if (cwnd < 1)
             {
                 cwnd = 1;
