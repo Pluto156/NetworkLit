@@ -11,7 +11,7 @@ namespace NetworkLit.Utility
     {
         public static byte[] Compress(byte[] data)
         {
-            /*byte[] ret;
+            byte[] ret;
 
             using (var ms = new MemoryStream())
             {
@@ -23,13 +23,13 @@ namespace NetworkLit.Utility
                 ret = ms.ToArray();
             }
 
-            return ret;*/
+            return ret;
             return data;
         }
 
         public static byte[] Decompress(byte[] data)
         {
-            /*if (data == null || data.Length == 0)
+            if (data == null || data.Length == 0)
             {
                 return data;
             }
@@ -53,7 +53,7 @@ namespace NetworkLit.Utility
                 }
             }
 
-            return ret;*/
+            return ret;
             return data;
         }
     }

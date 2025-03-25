@@ -38,7 +38,7 @@ namespace NetworkLit.Network
             for (var size = this.kcp.PeekSize(); size > 0; size = this.kcp.PeekSize())
             {
                 var buffer = new byte[size];
-                Console.WriteLine($" this.kcp.Recv(buffer) {this.kcp.Recv(buffer)}  ");
+                //Console.WriteLine($" this.kcp.Recv(buffer) {this.kcp.Recv(buffer)}  ");
 
                 if (this.kcp.Recv(buffer) > 0)
                 {
@@ -53,6 +53,7 @@ namespace NetworkLit.Network
                     {
                         package.Content = new byte[1];
                     }
+                    Console.WriteLine($"kcp.Recv package {(MessageType)package.MessageId}\n");
                     this.Handle((MessageType)package.MessageId, package.Content);
                 }
             }
@@ -66,15 +67,12 @@ namespace NetworkLit.Network
                 Console.Write($"{b:X2} "); // 以十六进制格式打印，每个字节两位
             }
             Console.WriteLine("\n");
-            buffer = PackageCompress.Compress(buffer);
-
 
             this.kcp.Send(buffer);
         }
 
         public void Input(byte[] buffer)
         {
-            buffer = PackageCompress.Decompress(buffer);
             Console.WriteLine($"kcp input {EndPoint.ToString()}");
             foreach (byte b in buffer)
             {

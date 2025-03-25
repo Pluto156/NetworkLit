@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NetworkLit.Utility;
 
 namespace NetworkLit.Network
 {
@@ -109,7 +110,7 @@ namespace NetworkLit.Network
                 info.HasContent = buffer.ReadBool();
                 if (info.HasContent)
                 {
-                    info.Content = buffer.ReadBytes();
+                    info.Content = PackageCompress.Decompress(buffer.ReadBytes());
                 }
                 return info;
             }
@@ -122,7 +123,7 @@ namespace NetworkLit.Network
                 buffer.WriteBool(info.HasContent);
                 if (info.HasContent)
                 {
-                    buffer.WriteBytes(info.Content);
+                    buffer.WriteBytes(PackageCompress.Compress(info.Content));
                 }
                 return buffer.Getbuffer();
             }

@@ -38,7 +38,7 @@ class Program
         // 新连接时的回调
         static void NewConnection(MessageType id, ByteBuffer bf, IPEndPoint endPoint)
         {
-            Console.WriteLine("连接成功");
+            Console.WriteLine($"连接成功 {endPoint}");
         }
     }
 }

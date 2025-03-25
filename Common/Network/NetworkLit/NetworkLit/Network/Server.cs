@@ -90,12 +90,17 @@ namespace NetworkLit.Network
         protected override void ReceiveCallback(IAsyncResult ar)
         {
             IPEndPoint ep = null;
-            var buffer = this.udp.EndReceive(ar, ref ep);
-            Console.WriteLine($"Server recv  ip: {ep} size{buffer.Length} ");
-            
-            if (buffer != null)
+            byte[] buffer = null;
+            try
             {
-                if (buffer.Length < 26) return;
+                buffer = this.udp.EndReceive(ar, ref ep);
+                Console.WriteLine($"Server recv  ip: {ep} size{buffer.Length} ");
+
+            }
+            catch (Exception ex) { }
+            
+            if (buffer != null && buffer.Length >= 26)
+            {
                 ushort msgId = BitConverter.ToUInt16(buffer, 24);  // 从下标 24 开始读取 2 个字节
                 string fd = ep.ToString();
 
@@ -141,7 +146,7 @@ namespace NetworkLit.Network
         private void Heartbeat(MessageType id, ByteBuffer reader, IPEndPoint ep)
         {
             this.Send(ep, MessagePackage.Build((ushort)MessageType.Heartbeat, null));
-            Console.Write($"Server Heartbeat  + {ep.ToString()}\n ");
+            Console.Write($"Server Heartbeat   {ep.ToString()}\n ");
         }
     }
 }
